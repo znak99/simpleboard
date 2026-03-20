@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>게시글 수정</title>
+</head>
+<body>
+<h1>게시글 수정</h1>
+
+<form method="post" th:action="@{/posts/{id}/edit(id=${postId})}" th:object="${postForm}">
+    <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden">
+    <div>
+        <label for="title">제목</label>
+        <input id="title" th:field="*{title}" type="text">
+        <div th:errors="*{title}" th:if="${#fields.hasErrors('title')}"></div>
+    </div>
+
+    <div>
+        <label for="content">내용</label>
+        <textarea id="content" th:field="*{content}"></textarea>
+        <div th:errors="*{content}" th:if="${#fields.hasErrors('content')}"></div>
+    </div>
+
+    <div>
+        <button type="submit">수정</button>
+    </div>
+</form>
+
+<p><a th:href="@{/posts/{id}(id=${postId})}">상세로</a></p>
+</body>
+</html>

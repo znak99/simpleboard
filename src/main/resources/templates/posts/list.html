@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>게시글 목록</title>
+</head>
+<body>
+<h1>게시글 목록</h1>
+
+<div>
+    <a th:href="@{/}">홈</a>
+    <span th:if="${loginUser != null}">
+        | <a th:href="@{/posts/new}">글쓰기</a>
+    </span>
+</div>
+
+<hr>
+
+<form method="get" th:action="@{/posts}">
+    <input name="keyword" placeholder="제목 검색" th:value="${condition.keyword}" type="text">
+    <button type="submit">검색</button>
+</form>
+
+<hr>
+
+<div th:if="${postPage.isEmpty()}">
+    <p>게시글이 없습니다.</p>
+</div>
+
+<table border="1" th:if="${!postPage.isEmpty()}">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>제목</th>
+        <th>작성자</th>
+        <th>작성일</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="post : ${postPage.content}">
+        <td th:text="${post.id}"></td>
+        <td>
+            <a th:href="@{/posts/{id}(id=${post.id})}" th:text="${post.title}"></a>
+        </td>
+        <td th:text="${post.authorName}"></td>
+        <td th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
+    </tr>
+    </tbody>
+</table>
+
+<div th:if="${!postPage.isEmpty()}">
+    <span th:if="${postPage.hasPrevious()}">
+        <a th:href="@{/posts(page=${postPage.number - 1}, keyword=${condition.keyword})}">이전</a>
+    </span>
+
+    <span th:each="pageNumber : ${#numbers.sequence(0, postPage.totalPages - 1)}">
+        <a th:href="@{/posts(page=${pageNumber}, keyword=${condition.keyword})}"
+           th:text="${pageNumber + 1}"></a>
+    </span>
+
+    <span th:if="${postPage.hasNext()}">
+        <a th:href="@{/posts(page=${postPage.number + 1}, keyword=${condition.keyword})}">다음</a>
+    </span>
+</div>
+</body>
+</html>

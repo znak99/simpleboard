@@ -1,0 +1,35 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: simpleboard-postgres
+    environment:
+      POSTGRES_DB: simpleboard
+      POSTGRES_USER: simpleboard
+      POSTGRES_PASSWORD: simpleboard
+    ports:
+      - "5432:5432"
+    volumes:
+      - simpleboard-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U simpleboard -d simpleboard"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: simpleboard-app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/simpleboard
+      DB_USERNAME: simpleboard
+      DB_PASSWORD: simpleboard
+    ports:
+      - "8080:8080"
+
+volumes:
+  simpleboard-postgres-data:

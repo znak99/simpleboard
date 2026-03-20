@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>SimpleBoard</title>
+</head>
+<body>
+<h1>SimpleBoard</h1>
+
+<p><a th:href="@{/posts}">게시판으로 이동</a></p>
+
+<div th:if="${loginUser == null}">
+    <p>비로그인 상태입니다.</p>
+    <p><a th:href="@{/signup}">회원가입</a></p>
+    <p><a th:href="@{/login}">로그인</a></p>
+</div>
+
+<div th:if="${loginUser != null}">
+    <p>
+        <span th:text="${loginUser.name}"></span>
+        님, 로그인되었습니다.
+    </p>
+
+    <form th:action="@{/logout}" method="post">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+        <button type="submit">로그아웃</button>
+    </form>
+</div>
+</body>
+</html>
