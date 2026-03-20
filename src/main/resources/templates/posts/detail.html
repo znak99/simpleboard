@@ -3,85 +3,122 @@
 <head>
     <meta charset="UTF-8">
     <title>게시글 상세</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=SUIT:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+    <script defer th:src="@{/js/app.js}"></script>
 </head>
-<body>
-<h1 th:text="${post.title}"></h1>
+<body class="sky-theme">
+<div class="page-shell">
+    <div class="ambient ambient--one" aria-hidden="true"></div>
+    <div class="ambient ambient--two" aria-hidden="true"></div>
 
-<div>
-    <p>
-        작성자:
-        <span th:text="${post.authorName}"></span>
-    </p>
-    <p>
-        작성일:
-        <span th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}"></span>
-    </p>
-    <p>
-        수정일:
-        <span th:text="${#temporals.format(post.updatedAt, 'yyyy-MM-dd HH:mm')}"></span>
-    </p>
-</div>
+    <main class="detail-shell">
+        <section class="panel detail-article" data-reveal>
+            <div class="detail-article__top">
+                <div>
+                    <div class="panel__eyebrow">Post Detail</div>
+                    <h1 class="detail-article__title" th:text="${post.title}"></h1>
+                </div>
 
-<hr>
+                <div class="detail-actions">
+                    <a class="btn btn-secondary" th:href="@{/posts}">목록으로</a>
+                    <a class="btn btn-primary"
+                       th:if="${loginUser != null and loginUser.id == post.authorId}"
+                       th:href="@{/posts/{id}/edit(id=${post.id})}">
+                        수정
+                    </a>
+                    <form class="inline-form"
+                          method="post"
+                          th:if="${loginUser != null and loginUser.id == post.authorId}"
+                          th:action="@{/posts/{id}/delete(id=${post.id})}">
+                        <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden">
+                        <button class="btn btn-ghost" type="submit">삭제</button>
+                    </form>
+                </div>
+            </div>
 
-<div>
-    <pre th:text="${post.content}"></pre>
-</div>
+            <div class="detail-meta">
+                <div class="meta-chip">
+                    <span class="meta-chip__label">작성자</span>
+                    <strong th:text="${post.authorName}"></strong>
+                </div>
+                <div class="meta-chip">
+                    <span class="meta-chip__label">작성일</span>
+                    <strong th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}"></strong>
+                </div>
+                <div class="meta-chip">
+                    <span class="meta-chip__label">수정일</span>
+                    <strong th:text="${#temporals.format(post.updatedAt, 'yyyy-MM-dd HH:mm')}"></strong>
+                </div>
+            </div>
 
-<hr>
+            <div class="detail-content">
+                <pre th:text="${post.content}"></pre>
+            </div>
+        </section>
 
-<div>
-    <a th:href="@{/posts}">목록으로</a>
+        <section class="panel comments-panel" data-reveal>
+            <div class="comments-panel__header">
+                <div>
+                    <div class="panel__eyebrow">Comments</div>
+                    <h2 class="panel__title">댓글</h2>
+                </div>
+                <div class="board-panel__meta" th:text="${#lists.size(comments)} + '개'"></div>
+            </div>
 
-    <span th:if="${loginUser != null and loginUser.id == post.authorId}">
-        | <a th:href="@{/posts/{id}/edit(id=${post.id})}">수정</a>
-        | <form method="post" style="display:inline;" th:action="@{/posts/{id}/delete(id=${post.id})}">
-            <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden">
-            <button type="submit">삭제</button>
-          </form>
-    </span>
-</div>
+            <div class="empty-state empty-state--compact" th:if="${#lists.isEmpty(comments)}">
+                <div class="empty-state__badge">No Comments</div>
+                <h3>아직 댓글이 없습니다.</h3>
+                <p>첫 댓글을 남겨 이 글의 대화를 시작해보세요.</p>
+            </div>
 
-<hr>
+            <div class="comment-list" th:if="${!#lists.isEmpty(comments)}">
+                <article class="comment-card" th:each="comment : ${comments}">
+                    <div class="comment-card__header">
+                        <div>
+                            <strong th:text="${comment.authorName}"></strong>
+                            <span class="comment-card__date"
+                                  th:text="${#temporals.format(comment.createdAt, 'yyyy-MM-dd HH:mm')}"></span>
+                        </div>
 
-<h2>댓글</h2>
+                        <form class="inline-form"
+                              method="post"
+                              th:action="@{/posts/{postId}/comments/{commentId}/delete(postId=${post.id}, commentId=${comment.id})}"
+                              th:if="${loginUser != null and loginUser.id == comment.authorId}">
+                            <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden">
+                            <button class="btn btn-ghost comment-card__button" type="submit">댓글 삭제</button>
+                        </form>
+                    </div>
 
-<div th:if="${#lists.isEmpty(comments)}">
-    <p>아직 댓글이 없습니다.</p>
-</div>
+                    <p class="comment-card__content" th:text="${comment.content}"></p>
+                </article>
+            </div>
 
-<div th:each="comment : ${comments}">
-    <p>
-        <strong th:text="${comment.authorName}"></strong>
-        <span th:text="${#temporals.format(comment.createdAt, 'yyyy-MM-dd HH:mm')}"></span>
-    </p>
-    <p th:text="${comment.content}"></p>
+            <div class="comment-form-wrap" th:if="${loginUser != null}">
+                <h3 class="comment-form-wrap__title">댓글 작성</h3>
+                <form class="comment-form"
+                      method="post"
+                      th:action="@{/posts/{postId}/comments(postId=${post.id})}"
+                      th:object="${commentForm}">
+                    <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden">
+                    <div class="form-field">
+                        <label class="sr-only" for="comment-content">댓글 내용</label>
+                        <textarea id="comment-content" th:field="*{content}" placeholder="이 게시글에 대한 생각을 남겨보세요"></textarea>
+                    </div>
+                    <div class="comment-form__actions">
+                        <button class="btn btn-primary" type="submit">댓글 등록</button>
+                    </div>
+                </form>
+            </div>
 
-    <form method="post"
-          th:action="@{/posts/{postId}/comments/{commentId}/delete(postId=${post.id}, commentId=${comment.id})}"
-          th:if="${loginUser != null and loginUser.id == comment.authorId}">
-        <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden">
-        <button type="submit">댓글 삭제</button>
-    </form>
-
-    <hr>
-</div>
-
-<div th:if="${loginUser != null}">
-    <h3>댓글 작성</h3>
-    <form method="post" th:action="@{/posts/{postId}/comments(postId=${post.id})}" th:object="${commentForm}">
-        <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden">
-        <div>
-            <textarea th:field="*{content}"></textarea>
-        </div>
-        <div>
-            <button type="submit">댓글 등록</button>
-        </div>
-    </form>
-</div>
-
-<div th:if="${loginUser == null}">
-    <p><a th:href="@{/login}">로그인</a> 후 댓글을 작성할 수 있습니다.</p>
+            <div class="login-hint" th:if="${loginUser == null}">
+                <p><a th:href="@{/login}">로그인</a> 후 댓글을 작성할 수 있습니다.</p>
+            </div>
+        </section>
+    </main>
 </div>
 </body>
 </html>

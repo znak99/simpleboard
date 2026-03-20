@@ -3,40 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <title>회원가입</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=SUIT:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+    <script defer th:src="@{/js/app.js}"></script>
 </head>
-<body>
-<h1>회원가입</h1>
+<body class="sky-theme">
+<div class="page-shell">
+    <div class="ambient ambient--one" aria-hidden="true"></div>
+    <div class="ambient ambient--two" aria-hidden="true"></div>
 
-<div th:if="${signupError}">
-    <p th:text="${signupError}"></p>
+    <main class="auth-shell">
+        <section class="auth-card" data-reveal>
+            <div class="auth-eyebrow">Create Account</div>
+            <h1 class="auth-card__title auth-card__title--signup">SimpleBoard를 시작해보세요</h1>
+            <p>몇 가지 정보만 입력하면 바로 커뮤니티에 참여할 수 있습니다.</p>
+
+            <div class="alert alert-error" th:if="${signupError}" th:text="${signupError}"></div>
+
+            <form class="auth-form" th:action="@{/signup}" th:object="${userSignUpForm}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+                <div class="form-stack">
+                    <div class="form-field">
+                        <label for="email">이메일</label>
+                        <input type="email" id="email" th:field="*{email}" placeholder="you@example.com" autocomplete="email">
+                        <div class="form-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="password">비밀번호</label>
+                        <input type="password" id="password" th:field="*{password}" placeholder="비밀번호를 입력해주세요" autocomplete="new-password">
+                        <div class="form-error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="name">이름</label>
+                        <input type="text" id="name" th:field="*{name}" placeholder="표시할 이름을 입력해주세요" autocomplete="name">
+                        <div class="form-error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                    </div>
+                </div>
+
+                <div class="auth-actions">
+                    <button class="btn btn-primary" type="submit">회원가입</button>
+                    <a class="btn btn-secondary" th:href="@{/}">홈으로</a>
+                </div>
+            </form>
+
+            <p class="auth-link-row">
+                이미 계정이 있으신가요?
+                <a th:href="@{/login}">로그인하러 가기</a>
+            </p>
+        </section>
+
+        <aside class="auth-aside" data-reveal>
+            <div class="hero__badge">Join SimpleBoard</div>
+            <h2>편안한 화면 안에서 바로 참여하세요</h2>
+            <p>시작은 간단하지만, 읽기와 작성 경험은 가볍고 정돈된 흐름으로 이어지도록 구성했습니다.</p>
+
+            <ul class="auth-feature-list">
+                <li>선명한 하늘색 포인트와 넉넉한 여백으로 부담 없는 첫인상을 만듭니다.</li>
+                <li>모바일과 데스크톱 모두에서 자연스럽게 읽히는 인증 레이아웃입니다.</li>
+                <li>부드러운 진입 애니메이션만 더해 UX를 가볍게 개선합니다.</li>
+            </ul>
+        </aside>
+    </main>
 </div>
-
-<form th:action="@{/signup}" th:object="${userSignUpForm}" method="post">
-    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-
-    <div>
-        <label for="email">이메일</label>
-        <input type="email" id="email" th:field="*{email}">
-        <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
-    </div>
-
-    <div>
-        <label for="password">비밀번호</label>
-        <input type="password" id="password" th:field="*{password}">
-        <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
-    </div>
-
-    <div>
-        <label for="name">이름</label>
-        <input type="text" id="name" th:field="*{name}">
-        <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
-    </div>
-
-    <div>
-        <button type="submit">회원가입</button>
-    </div>
-</form>
-
-<p><a th:href="@{/}">홈으로</a></p>
 </body>
 </html>

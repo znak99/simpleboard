@@ -3,64 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <title>게시글 목록</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=SUIT:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+    <script defer th:src="@{/js/app.js}"></script>
 </head>
-<body>
-<h1>게시글 목록</h1>
+<body class="sky-theme">
+<div class="page-shell">
+    <div class="ambient ambient--one" aria-hidden="true"></div>
+    <div class="ambient ambient--two" aria-hidden="true"></div>
 
-<div>
-    <a th:href="@{/}">홈</a>
-    <span th:if="${loginUser != null}">
-        | <a th:href="@{/posts/new}">글쓰기</a>
-    </span>
-</div>
+    <header class="board-hero" data-reveal>
+        <div class="board-hero__content">
+            <div class="hero__badge">Board Overview</div>
+            <h1 class="board-hero__title">게시글 목록</h1>
+            <p class="board-hero__description">
+                최근 글을 한눈에 둘러보고, 필요한 이야기로 자연스럽게 들어갈 수 있는
+                산뜻한 보드 화면입니다.
+            </p>
+        </div>
 
-<hr>
+        <div class="board-hero__actions">
+            <a class="btn btn-secondary" th:href="@{/}">홈으로</a>
+            <a class="btn btn-primary" th:if="${loginUser != null}" th:href="@{/posts/new}">글쓰기</a>
+        </div>
+    </header>
 
-<form method="get" th:action="@{/posts}">
-    <input name="keyword" placeholder="제목 검색" th:value="${condition.keyword}" type="text">
-    <button type="submit">검색</button>
-</form>
+    <main class="board-shell">
+        <section class="panel panel-search" data-reveal>
+            <div>
+                <div class="panel__eyebrow">Search</div>
+                <h2 class="panel__title">찾고 싶은 글을 빠르게 검색하세요</h2>
+            </div>
 
-<hr>
+            <form class="search-form" method="get" th:action="@{/posts}">
+                <div class="form-field">
+                    <label class="sr-only" for="keyword">제목 검색</label>
+                    <input id="keyword" name="keyword" placeholder="제목으로 검색해보세요" th:value="${condition.keyword}" type="text">
+                </div>
+                <button class="btn btn-primary" type="submit">검색</button>
+            </form>
+        </section>
 
-<div th:if="${postPage.isEmpty()}">
-    <p>게시글이 없습니다.</p>
-</div>
+        <section class="panel board-panel" data-reveal>
+            <div class="board-panel__header">
+                <div>
+                    <div class="panel__eyebrow">Posts</div>
+                    <h2 class="panel__title">이야기들이 모여 있는 공간</h2>
+                </div>
+                <div class="board-panel__meta" th:if="${!postPage.isEmpty()}">
+                    총
+                    <strong th:text="${postPage.totalElements}"></strong>
+                    개의 게시글
+                </div>
+            </div>
 
-<table border="1" th:if="${!postPage.isEmpty()}">
-    <thead>
-    <tr>
-        <th>ID</th>
-        <th>제목</th>
-        <th>작성자</th>
-        <th>작성일</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="post : ${postPage.content}">
-        <td th:text="${post.id}"></td>
-        <td>
-            <a th:href="@{/posts/{id}(id=${post.id})}" th:text="${post.title}"></a>
-        </td>
-        <td th:text="${post.authorName}"></td>
-        <td th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
-    </tr>
-    </tbody>
-</table>
+            <div class="empty-state" th:if="${postPage.isEmpty()}">
+                <div class="empty-state__badge">No Posts Yet</div>
+                <h3>아직 등록된 게시글이 없습니다.</h3>
+                <p>첫 번째 이야기를 남기며 이 공간을 시작해보세요.</p>
+                <a class="btn btn-primary" th:if="${loginUser != null}" th:href="@{/posts/new}">첫 글 작성하기</a>
+            </div>
 
-<div th:if="${!postPage.isEmpty()}">
-    <span th:if="${postPage.hasPrevious()}">
-        <a th:href="@{/posts(page=${postPage.number - 1}, keyword=${condition.keyword})}">이전</a>
-    </span>
+            <div class="post-table-wrap" th:if="${!postPage.isEmpty()}">
+                <table class="post-table">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>제목</th>
+                        <th>작성자</th>
+                        <th>작성일</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="post : ${postPage.content}">
+                        <td class="post-id" th:text="${post.id}"></td>
+                        <td>
+                            <a class="post-link" th:href="@{/posts/{id}(id=${post.id})}">
+                                <span class="post-link__title" th:text="${post.title}"></span>
+                                <span class="post-link__meta">게시글 상세 보기</span>
+                            </a>
+                        </td>
+                        <td th:text="${post.authorName}"></td>
+                        <td th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
 
-    <span th:each="pageNumber : ${#numbers.sequence(0, postPage.totalPages - 1)}">
-        <a th:href="@{/posts(page=${pageNumber}, keyword=${condition.keyword})}"
-           th:text="${pageNumber + 1}"></a>
-    </span>
+            <nav class="pagination" th:if="${!postPage.isEmpty()}">
+                <a class="pagination__link"
+                   th:classappend="${!postPage.hasPrevious()} ? ' is-disabled'"
+                   th:href="${postPage.hasPrevious()} ? @{/posts(page=${postPage.number - 1}, keyword=${condition.keyword})} : '#'}">
+                    이전
+                </a>
 
-    <span th:if="${postPage.hasNext()}">
-        <a th:href="@{/posts(page=${postPage.number + 1}, keyword=${condition.keyword})}">다음</a>
-    </span>
+                <a class="pagination__link"
+                   th:classappend="${pageNumber == postPage.number} ? ' is-current'"
+                   th:each="pageNumber : ${#numbers.sequence(0, postPage.totalPages - 1)}"
+                   th:href="@{/posts(page=${pageNumber}, keyword=${condition.keyword})}"
+                   th:text="${pageNumber + 1}"></a>
+
+                <a class="pagination__link"
+                   th:classappend="${!postPage.hasNext()} ? ' is-disabled'"
+                   th:href="${postPage.hasNext()} ? @{/posts(page=${postPage.number + 1}, keyword=${condition.keyword})} : '#'}">
+                    다음
+                </a>
+            </nav>
+        </section>
+    </main>
 </div>
 </body>
 </html>
