@@ -26,16 +26,31 @@ jobs:
       - name: Run tests
         run: ./gradlew clean test
 
-      - name: Configure SSH
+      - name: Prepare SSH folder
+        run: |
+          set -euxo pipefail
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          ls -ld ~/.ssh
+
+      - name: Write private key
         env:
           EC2_SSH_KEY_BASE64: ${{ secrets.EC2_SSH_KEY_BASE64 }}
+        run: |
+          set -euxo pipefail
+          echo "$EC2_SSH_KEY_BASE64" | base64 -d > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keygen -y -f ~/.ssh/id_ed25519 > /dev/null
+          ls -l ~/.ssh
+
+      - name: Add host key
+        env:
           EC2_HOST: ${{ secrets.EC2_HOST }}
           EC2_PORT: ${{ secrets.EC2_PORT }}
         run: |
-          mkdir -p ~/.ssh
-          echo "$EC2_SSH_KEY_BASE64" | base64 -d > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
+          set -euxo pipefail
           ssh-keyscan -p "$EC2_PORT" -H "$EC2_HOST" >> ~/.ssh/known_hosts
+          cat ~/.ssh/known_hosts
 
       - name: Deploy to EC2
         env:
@@ -43,6 +58,7 @@ jobs:
           EC2_USER: ${{ secrets.EC2_USER }}
           EC2_PORT: ${{ secrets.EC2_PORT }}
         run: |
+          set -euxo pipefail
           ssh -i ~/.ssh/id_ed25519 -p "$EC2_PORT" "$EC2_USER@$EC2_HOST" << 'EOF'
             set -e
             cd /home/ubuntu/simpleboard
