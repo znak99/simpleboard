@@ -2,14 +2,31 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>오류</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=SUIT:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+    <script defer th:src="@{/js/app.js}"></script>
 </head>
-<body>
-<h1>오류가 발생했습니다.</h1>
+<body class="sky-theme">
+<div class="page-shell">
+    <div class="ambient ambient--one" aria-hidden="true"></div>
+    <div class="ambient ambient--two" aria-hidden="true"></div>
 
-<p th:text="${errorMessage}">에러 메시지</p>
+    <main class="board-shell">
+        <section class="panel board-panel" data-reveal>
+            <div class="panel__eyebrow">Error</div>
+            <h1 class="panel__title">오류가 발생했습니다.</h1>
+            <p th:text="${errorMessage}">에러 메시지</p>
 
-<p><a th:href="@{/}">홈으로</a></p>
-<p><a th:href="@{/posts}">게시글 목록으로</a></p>
+            <div class="board-hero__actions">
+                <a class="btn btn-secondary" th:href="@{/}">홈으로</a>
+                <a class="btn btn-primary" th:href="@{/posts}">게시글 목록으로</a>
+            </div>
+        </section>
+    </main>
+</div>
 </body>
 </html>

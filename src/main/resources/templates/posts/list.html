@@ -87,7 +87,7 @@
                             </a>
                         </td>
                         <td th:text="${post.authorName}"></td>
-                        <td th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
+                        <td th:text="${post.createdAt != null ? #temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm') : '날짜 정보 없음'}"></td>
                     </tr>
                     </tbody>
                 </table>
@@ -95,8 +95,13 @@
 
             <nav class="pagination" th:if="${!postPage.isEmpty()}">
                 <a class="pagination__link"
-                   th:classappend="${!postPage.hasPrevious()} ? ' is-disabled'"
-                   th:href="${postPage.hasPrevious()} ? @{/posts(page=${postPage.number - 1}, keyword=${condition.keyword})} : '#'}">
+                   th:if="${postPage.hasPrevious()}"
+                   th:href="@{/posts(page=${postPage.number - 1}, keyword=${condition.keyword})}">
+                    이전
+                </a>
+                <a class="pagination__link is-disabled"
+                   th:if="${!postPage.hasPrevious()}"
+                   th:href="@{/posts(page=0, keyword=${condition.keyword})}">
                     이전
                 </a>
 
@@ -107,8 +112,13 @@
                    th:text="${pageNumber + 1}"></a>
 
                 <a class="pagination__link"
-                   th:classappend="${!postPage.hasNext()} ? ' is-disabled'"
-                   th:href="${postPage.hasNext()} ? @{/posts(page=${postPage.number + 1}, keyword=${condition.keyword})} : '#'}">
+                   th:if="${postPage.hasNext()}"
+                   th:href="@{/posts(page=${postPage.number + 1}, keyword=${condition.keyword})}">
+                    다음
+                </a>
+                <a class="pagination__link is-disabled"
+                   th:if="${!postPage.hasNext()}"
+                   th:href="@{/posts(page=${postPage.number}, keyword=${condition.keyword})}">
                     다음
                 </a>
             </nav>

@@ -47,11 +47,11 @@
                 </div>
                 <div class="meta-chip">
                     <span class="meta-chip__label">작성일</span>
-                    <strong th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}"></strong>
+                    <strong th:text="${post.createdAt != null ? #temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm') : '날짜 정보 없음'}"></strong>
                 </div>
                 <div class="meta-chip">
                     <span class="meta-chip__label">수정일</span>
-                    <strong th:text="${#temporals.format(post.updatedAt, 'yyyy-MM-dd HH:mm')}"></strong>
+                    <strong th:text="${post.updatedAt != null ? #temporals.format(post.updatedAt, 'yyyy-MM-dd HH:mm') : '수정 이력 없음'}"></strong>
                 </div>
             </div>
 
@@ -81,7 +81,7 @@
                         <div>
                             <strong th:text="${comment.authorName}"></strong>
                             <span class="comment-card__date"
-                                  th:text="${#temporals.format(comment.createdAt, 'yyyy-MM-dd HH:mm')}"></span>
+                                  th:text="${comment.createdAt != null ? #temporals.format(comment.createdAt, 'yyyy-MM-dd HH:mm') : '날짜 정보 없음'}"></span>
                         </div>
 
                         <form class="inline-form"
