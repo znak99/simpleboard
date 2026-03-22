@@ -23,13 +23,13 @@
 
             <div class="alert alert-error" th:if="${signupError}" th:text="${signupError}"></div>
 
-            <form class="auth-form" method="post" th:action="@{/signup}" th:object="${userSignUpForm}">
+            <form autocomplete="on" class="auth-form" method="post" th:action="@{/signup}" th:object="${userSignUpForm}">
                 <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden">
 
                 <div class="form-stack">
                     <div class="form-field">
                         <label for="email">이메일</label>
-                        <input autocomplete="email" id="email" placeholder="you@example.com" th:field="*{email}" type="email">
+                        <input autocomplete="username" id="email" placeholder="you@example.com" th:field="*{email}" type="email">
                         <div class="form-error" th:errors="*{email}" th:if="${#fields.hasErrors('email')}"></div>
                     </div>
 
