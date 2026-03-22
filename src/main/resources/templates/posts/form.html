@@ -3,28 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <title>게시글 작성</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=SUIT:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+    <script defer th:src="@{/js/app.js}"></script>
 </head>
-<body>
-<h1>게시글 작성</h1>
+<body class="sky-theme">
+<div class="page-shell">
+    <div class="ambient ambient--one" aria-hidden="true"></div>
+    <div class="ambient ambient--two" aria-hidden="true"></div>
 
-<form th:action="@{/posts/new}" th:object="${postForm}" method="post">
-    <div>
-        <label for="title">제목</label>
-        <input type="text" id="title" th:field="*{title}">
-        <div th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
-    </div>
+    <main class="detail-shell">
+        <section class="panel detail-article" data-reveal>
+            <div class="detail-article__top">
+                <div>
+                    <div class="panel__eyebrow">Write Post</div>
+                    <h1 class="detail-article__title">게시글 작성</h1>
+                </div>
 
-    <div>
-        <label for="content">내용</label>
-        <textarea id="content" th:field="*{content}"></textarea>
-        <div th:if="${#fields.hasErrors('content')}" th:errors="*{content}"></div>
-    </div>
+                <div class="detail-actions">
+                    <a class="btn btn-secondary" th:href="@{/posts}">목록으로</a>
+                </div>
+            </div>
 
-    <div>
-        <button type="submit">등록</button>
-    </div>
-</form>
+            <form class="auth-form" method="post" th:action="@{/posts/new}" th:object="${postForm}">
+                <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden">
 
-<p><a th:href="@{/posts}">목록으로</a></p>
+                <div class="form-stack">
+                    <div class="form-field">
+                        <label for="title">제목</label>
+                        <input id="title" placeholder="제목을 입력해주세요" th:field="*{title}" type="text">
+                        <div class="form-error" th:errors="*{title}" th:if="${#fields.hasErrors('title')}"></div>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="content">내용</label>
+                        <textarea id="content" placeholder="전하고 싶은 이야기를 작성해보세요" th:field="*{content}"></textarea>
+                        <div class="form-error" th:errors="*{content}" th:if="${#fields.hasErrors('content')}"></div>
+                    </div>
+                </div>
+
+                <div class="auth-actions">
+                    <button class="btn btn-primary" type="submit">등록</button>
+                    <a class="btn btn-secondary" th:href="@{/posts}">취소</a>
+                </div>
+            </form>
+        </section>
+    </main>
+</div>
 </body>
 </html>
